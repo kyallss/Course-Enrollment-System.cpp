@@ -2,7 +2,7 @@
 using namespace std;
 
 struct Course {
-    int courseId;
+    int courseId; 
     string courseName;
     
 };
