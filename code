@@ -2,37 +2,189 @@
 using namespace std;
 
 struct Course {
-    int courseId; 
+    int courseId;
     string courseName;
-    
+    // Add more attributes as needed
 };
+
 
 struct Student {
     int studentId;
     string studentName;
-    vector<Course> courses; 
+    vector<Course> courses; // Courses enrolled by the student
+    // Add more attributes as needed
 };
 
+
 namespace EnrollmentSystem {
-    vector<Student> loadStudentsFromFile(const string& filename) {
+    const string studentsFile = "students.txt";
+
+    vector<Student> loadStudentsFromFile() {
         vector<Student> students;
-       
+        ifstream file(studentsFile);
+        if (file.is_open()) {
+            while (!file.eof()) {
+                Student student;
+                file >> student.studentId;
+                file.ignore(); // Ignore the newline character
+                getline(file, student.studentName);
+                // Read courses (if any)
+                int courseId;
+                while (file >> courseId) {
+                    Course course;
+                    course.courseId = courseId;
+                    file.ignore(); // Ignore the newline character
+                    getline(file, course.courseName);
+                    student.courses.push_back(course);
+                }
+                students.push_back(student);
+            }
+            file.close();
+        }
         return students;
     }
 
-    void saveStudentsToFile(const vector<Student>& students, const string& filename) {
-    
+    void saveStudentsToFile(const vector<Student>& students) {
+        ofstream file(studentsFile);
+        if (file.is_open()) {
+            for (const auto& student : students) {
+                file << student.studentId << "\n";
+                file << student.studentName << "\n";
+                for (const auto& course : student.courses) {
+                    file << course.courseId << "\n";
+                    file << course.courseName << "\n";
+                }
+            }
+            file.close();
+        } else {
+            cerr << "Error: Unable to save data to file.\n";
+        }
     }
 
+    void registerCourse(Student& student, const Course& course) {
+        // Check if the course is already enrolled
+        for (const auto& enrolledCourse : student.courses) {
+            if (enrolledCourse.courseId == course.courseId) {
+                cout << "You are already enrolled in this course.\n";
+                return;
+            }
+        }
+        // If not enrolled, register for the course
+        student.courses.push_back(course);
+        cout << "Course " << course.courseName << " registered successfully.\n";
+    }
+
+    void dropCourse(Student& student, int courseId) {
+        for (auto it = student.courses.begin(); it != student.courses.end(); ++it) {
+            if (it->courseId == courseId) {
+                student.courses.erase(it);
+                cout << "Course dropped successfully.\n";
+                return;
+            }
+        }
+        cout << "Course not found.\n";
+    }
+}
+
+
+void displayMenu(const vector<Student>& students) {
+    cout << "\n=== Menu ===\n"
+              << "1. Register for a Course\n"
+              << "2. Drop a Course\n"
+              << "3. View Courses\n"
+              << "4. Exit\n"
+              << "Enter your choice: ";
+}
+
+void registerCourse(vector<Student>& students) {
+    int studentId, courseId;
+    cout << "Enter student ID: ";
+    cin >> studentId;
+    bool found = false;
+    for (auto& student : students) {
+        if (student.studentId == studentId) {
+            found = true;
+            cout << "Enter course ID to register: ";
+            cin >> courseId;
+            // Here, you can retrieve course information from a database or another source
+            Course course;
+            course.courseId = courseId;
+            cin.ignore(); // Ignore the newline character
+            cout << "Enter course name: ";
+            getline(std::cin, course.courseName);
+            EnrollmentSystem::registerCourse(student, course);
+            break;
+        }
+    }
+    if (!found)
+        cout << "Student not found.\n";
+}
+
+void dropCourse(vector<Student>& students) {
+    int studentId, courseId;
+    cout << "Enter student ID: ";
+    cin >> studentId;
+    bool found = false;
+    for (auto& student : students) {
+        if (student.studentId == studentId) {
+            found = true;
+            cout << "Enter course ID to drop: ";
+            cin >> courseId;
+            EnrollmentSystem::dropCourse(student, courseId);
+            break;
+        }
+    }
+    if (!found)
+        cout << "Student not found.\n";
+}
+
+void viewCourses(const vector<Student>& students) {
+    int studentId;
+    cout << "Enter student ID: ";
+    cin >> studentId;
+    bool found = false;
+    for (const auto& student : students) {
+        if (student.studentId == studentId) {
+            found = true;
+            cout << "Courses for Student " << student.studentName << ":\n";
+            for (const auto& course : student.courses) {
+            cout << "ID: " << course.courseId << ", Name: " << course.courseName << "\n";
+            }
+            break;
+        }
+    }
+    if (!found)
+        cout << "Student not found.\n";
 }
 
 int main() {
-   vector<Student> students = EnrollmentSystem::loadStudentsFromFile("students.txt");
+    // Load students data from file
+    vector<Student> students = EnrollmentSystem::loadStudentsFromFile();
 
-    // Display menu and handle user input
+    char choice;
+    do {
+        displayMenu(students);
+        cin >> choice;
+        switch (choice) {
+            case '1':
+                registerCourse(students);
+                break;
+            case '2':
+                dropCourse(students);
+                break;
+            case '3':
+                viewCourses(students);
+                break;
+            case '4':
+                std::cout << "Exiting program...\n";
+                break;
+            default:
+                std::cout << "Invalid choice. Please try again.\n";
+        }
+    } while (choice != '4');
 
     // Save students data to file before exiting
-    EnrollmentSystem::saveStudentsToFile(students, "students.txt");
+    EnrollmentSystem::saveStudentsToFile(students);
 
     return 0;
 }
