@@ -1,0 +1,38 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Course {
+    int courseId;
+    string courseName;
+    
+};
+
+struct Student {
+    int studentId;
+    string studentName;
+    vector<Course> courses; 
+};
+
+namespace EnrollmentSystem {
+    vector<Student> loadStudentsFromFile(const string& filename) {
+        vector<Student> students;
+       
+        return students;
+    }
+
+    void saveStudentsToFile(const vector<Student>& students, const string& filename) {
+    
+    }
+
+}
+
+int main() {
+   vector<Student> students = EnrollmentSystem::loadStudentsFromFile("students.txt");
+
+    // Display menu and handle user input
+
+    // Save students data to file before exiting
+    EnrollmentSystem::saveStudentsToFile(students, "students.txt");
+
+    return 0;
+}
