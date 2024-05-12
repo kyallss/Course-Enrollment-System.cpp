@@ -9,7 +9,7 @@ The purpose of this project is to create a simple Course Enrollment System. It a
 + Provide functionality for managing course information, such as adding new courses, updating course details, and deleting courses.
 
 
-####
+#### Code
 + Stuctures: The project utilizes structures ("Student" and "Course") to encapsulate related data and functions into coherent units.
 + File-Based storage: Data is stored in text files (students.txt and courses.txt) to ensure persistence between program executions.
 + Menu-Driven interface: Interaction with the system is menu-driven, providing users with clear options for various operations.
