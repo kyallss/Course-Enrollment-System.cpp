@@ -1,190 +1,280 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <string>
+#include <fstream>
 using namespace std;
 
-struct Course {
-    int courseId;
-    string courseName;
-    // Add more attributes as needed
-};
-
-
+// Define structures
 struct Student {
-    int studentId;
-    string studentName;
-    vector<Course> courses; // Courses enrolled by the student
-    // Add more attributes as needed
+    int ID;
+    string name;
+    vector<string> courses;
 };
 
+struct Course {
+    string code;
+    string name;
+};
 
-namespace EnrollmentSystem {
-    const string studentsFile = "students.txt";
+// Global vectors to store data
+vector<Student> students;
+vector<Course> courses;
 
-    vector<Student> loadStudentsFromFile() {
-        vector<Student> students;
-        ifstream file(studentsFile);
-        if (file.is_open()) {
-            while (!file.eof()) {
-                Student student;
-                file >> student.studentId;
-                file.ignore(); // Ignore the newline character
-                getline(file, student.studentName);
-                // Read courses (if any)
-                int courseId;
-                while (file >> courseId) {
-                    Course course;
-                    course.courseId = courseId;
-                    file.ignore(); // Ignore the newline character
-                    getline(file, course.courseName);
-                    student.courses.push_back(course);
-                }
-                students.push_back(student);
-            }
-            file.close();
-        }
-        return students;
-    }
+const string STUDENT_FILE = "students.txt";
+const string COURSE_FILE = "courses.txt";
 
-    void saveStudentsToFile(const vector<Student>& students) {
-        ofstream file(studentsFile);
-        if (file.is_open()) {
-            for (const auto& student : students) {
-                file << student.studentId << "\n";
-                file << student.studentName << "\n";
-                for (const auto& course : student.courses) {
-                    file << course.courseId << "\n";
-                    file << course.courseName << "\n";
-                }
-            }
-            file.close();
-        } else {
-            cerr << "Error: Unable to save data to file.\n";
-        }
-    }
-
-    void registerCourse(Student& student, const Course& course) {
-        // Check if the course is already enrolled
-        for (const auto& enrolledCourse : student.courses) {
-            if (enrolledCourse.courseId == course.courseId) {
-                cout << "You are already enrolled in this course.\n";
-                return;
-            }
-        }
-        // If not enrolled, register for the course
-        student.courses.push_back(course);
-        cout << "Course " << course.courseName << " registered successfully.\n";
-    }
-
-    void dropCourse(Student& student, int courseId) {
-        for (auto it = student.courses.begin(); it != student.courses.end(); ++it) {
-            if (it->courseId == courseId) {
-                student.courses.erase(it);
-                cout << "Course dropped successfully.\n";
-                return;
-            }
-        }
-        cout << "Course not found.\n";
-    }
-}
-
-
-void displayMenu(const vector<Student>& students) {
-    cout << "\n=== Menu ===\n"
-              << "1. Register for a Course\n"
-              << "2. Drop a Course\n"
-              << "3. View Courses\n"
-              << "4. Exit\n"
-              << "Enter your choice: ";
-}
-
-void registerCourse(vector<Student>& students) {
-    int studentId, courseId;
-    cout << "Enter student ID: ";
-    cin >> studentId;
-    bool found = false;
-    for (auto& student : students) {
-        if (student.studentId == studentId) {
-            found = true;
-            cout << "Enter course ID to register: ";
-            cin >> courseId;
-            // Here, you can retrieve course information from a database or another source
-            Course course;
-            course.courseId = courseId;
-            cin.ignore(); // Ignore the newline character
-            cout << "Enter course name: ";
-            getline(std::cin, course.courseName);
-            EnrollmentSystem::registerCourse(student, course);
-            break;
-        }
-    }
-    if (!found)
-        cout << "Student not found.\n";
-}
-
-void dropCourse(vector<Student>& students) {
-    int studentId, courseId;
-    cout << "Enter student ID: ";
-    cin >> studentId;
-    bool found = false;
-    for (auto& student : students) {
-        if (student.studentId == studentId) {
-            found = true;
-            cout << "Enter course ID to drop: ";
-            cin >> courseId;
-            EnrollmentSystem::dropCourse(student, courseId);
-            break;
-        }
-    }
-    if (!found)
-        cout << "Student not found.\n";
-}
-
-void viewCourses(const vector<Student>& students) {
-    int studentId;
-    cout << "Enter student ID: ";
-    cin >> studentId;
-    bool found = false;
-    for (const auto& student : students) {
-        if (student.studentId == studentId) {
-            found = true;
-            cout << "Courses for Student " << student.studentName << ":\n";
-            for (const auto& course : student.courses) {
-            cout << "ID: " << course.courseId << ", Name: " << course.courseName << "\n";
-            }
-            break;
-        }
-    }
-    if (!found)
-        cout << "Student not found.\n";
-}
+// Function prototypes
+void createStudent(int ID, string name);
+void displayStudents();
+void updateStudentCourses(int ID);
+void deleteStudent(int ID);
+void createCourse(string code, string name);
+void displayCourses();
+void updateCourse(string code);
+void deleteCourse(string code);
+void readStudentsFromFile();
+void writeStudentsToFile();
+void readCoursesFromFile();
+void writeCoursesToFile();
 
 int main() {
-    // Load students data from file
-    vector<Student> students = EnrollmentSystem::loadStudentsFromFile();
+    // Read data from files
+    readStudentsFromFile();
+    readCoursesFromFile();
 
-    char choice;
+    // Main loop to interact with the user
+    int choice;
     do {
-        displayMenu(students);
+        cout << "\nCourse Enrollment Management System\n";
+        cout << "1. Add Student\n";
+        cout << "2. Display Students\n";
+        cout << "3. Update Student Courses\n";
+        cout << "4. Delete Student\n";
+        cout << "5. Add Course\n";
+        cout << "6. Display Courses\n";
+        cout << "7. Update Course\n";
+        cout << "8. Delete Course\n";
+        cout << "0. Exit\n";
+        cout << "Enter your choice: ";
         cin >> choice;
+
         switch (choice) {
-            case '1':
-                registerCourse(students);
+            case 1: {
+                // Add student
+                int ID;
+                string name;
+                cout << "Enter student ID: ";
+                cin >> ID;
+                cout << "Enter student name: ";
+                cin.ignore(); // Clear input buffer
+                getline(cin, name);
+                createStudent(ID, name);
                 break;
-            case '2':
-                dropCourse(students);
+            }
+            case 2:
+                // Display students
+                displayStudents();
                 break;
-            case '3':
-                viewCourses(students);
+            case 3: {
+                // Update Student Courses
+                int ID;
+                cout << "Enter student ID: ";
+                cin >> ID;
+                updateStudentCourses(ID);
                 break;
-            case '4':
-                std::cout << "Exiting program...\n";
+            }
+            case 4: {
+                // Delete Student
+                int ID;
+                cout << "Enter student ID to delete: ";
+                cin >> ID;
+                deleteStudent(ID);
+                break;
+            }
+            case 5: {
+                // Add Course
+                string code, name;
+                cout << "Enter course code: ";
+                cin >> code;
+                cout << "Enter course name: ";
+                cin.ignore();
+                getline(cin, name);
+                createCourse(code, name);
+                break;
+            }
+            case 6:
+                // Display Courses
+                displayCourses();
+                break;
+            case 7: {
+                // Update Course
+                string code;
+                cout << "Enter course code to update: ";
+                cin >> code;
+                updateCourse(code);
+                break;
+            }
+            case 8: {
+                // Delete Course
+                string code;
+                cout << "Enter course code to delete: ";
+                cin >> code;
+                deleteCourse(code);
+                break;
+            }
+            case 0:
+                // Exit
                 break;
             default:
-                std::cout << "Invalid choice. Please try again.\n";
+                cout << "Invalid choice. Please try again.\n";
         }
-    } while (choice != '4');
+    } while (choice != 0);
 
-    // Save students data to file before exiting
-    EnrollmentSystem::saveStudentsToFile(students);
+    // Write data to files before exiting
+    writeStudentsToFile();
+    writeCoursesToFile();
+
+    cout << "Exiting...\n";
 
     return 0;
+}
+
+void createStudent(int ID, string name) {
+    Student newStudent;
+    newStudent.ID = ID;
+    newStudent.name = name;
+    students.push_back(newStudent);
+    cout << "Student added successfully." << endl;
+}
+
+void displayStudents() {
+    if (students.empty()) {
+        cout << "No students to display." << endl;
+        return;
+    }
+    cout << "List of Students:" << endl;
+    for (const auto& student : students) {
+        cout << "ID: " << student.ID << ", Name: " << student.name << endl;
+    }
+}
+
+void updateStudentCourses(int ID) {
+    for (auto& student : students) {
+        if (student.ID = ID) {
+            cout << "Enter new courses for student " << student.name << ":" << endl;
+            student.courses.clear(); // Clear existing courses
+            string course;
+            cin.ignore(); // Clear input buffer
+            while (true) {
+                cout << "Enter course name (or type 'done' to finish): ";
+                getline(cin, course);
+                if (course == "done") break;
+                student.courses.push_back(course);
+            }
+            cout << "Courses updated successfully for student " << student.name << "." << endl;
+            return;
+        }
+    }
+    cout << "Student with ID " << ID << " not found." << endl;
+}
+
+void deleteStudent(int ID) {
+    for (auto it = students.begin(); it != students.end(); ++it) {
+        if (it->ID == ID) {
+            students.erase(it);
+            cout << "Student with ID " << ID << " deleted successfully." << endl;
+            return;
+        }
+    }
+    cout << "Student with ID " << ID << " not found." << endl;
+}
+
+void createCourse(string code, string name) {
+    Course newCourse;
+    newCourse.code = code;
+    newCourse.name = name;
+    courses.push_back(newCourse);
+    cout << "Course added successfully." << endl;
+}
+
+void displayCourses() {
+    if (courses.empty()) {
+        cout << "No courses to display." << endl;
+        return;
+    }
+    cout << "List of Courses:" << endl;
+    for (const auto& course : courses) {
+        cout << "Code: " << course.code << ", Name: " << course.name << endl;
+    }
+}
+
+void updateCourse(string code) {
+    for (auto& course : courses) {
+        if (course.code == code) {
+            string newName;
+            cout << "Enter new name for course " << code << ": ";
+            cin.ignore(); // Clear input buffer
+            getline(cin, newName);
+            course.name = newName;
+            cout << "Course updated successfully." << endl;
+            return;
+        }
+    }
+    cout << "Course with code " << code << " not found." << endl;
+}
+
+void deleteCourse(string code) {
+    for (auto it = courses.begin(); it != courses.end(); ++it) {
+        if (it->code == code) {
+            courses.erase(it);
+            cout << "Course with code " << code << " deleted successfully." << endl;
+            return;
+        }
+    }
+    cout << "Course with code " << code << " not found." << endl;
+}
+
+void readStudentsFromFile() {
+    ifstream file(STUDENT_FILE);
+    if (file.is_open()) {
+        students.clear(); // Clear existing data
+        int ID;
+        string name;
+        while (file >> ID >> ws && getline(file, name)) {
+            createStudent(ID, name);
+        }
+        file.close();
+    }
+}
+
+void writeStudentsToFile() {
+    ofstream file(STUDENT_FILE);
+    if (file.is_open()) {
+        for (const auto& student : students) {
+            file << student.ID << " " << student.name << endl;
+        }
+        file.close();
+    }
+}
+
+void readCoursesFromFile() {
+    ifstream file(COURSE_FILE);
+    if (file.is_open()) {
+        courses.clear(); // Clear existing data
+        string code, name;
+        while (file >> code >> ws && getline(file, name)) {
+            createCourse(code, name);
+        }
+        file.close();
+    }
+}
+
+void writeCoursesToFile() {
+    ofstream file(COURSE_FILE);
+    if (file.is_open()) {
+        for (const auto& course : courses) {
+            file << course.code << " " << course.name << endl;
+        }
+        file.close();
+    }
 }
