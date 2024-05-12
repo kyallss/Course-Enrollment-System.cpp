@@ -4,10 +4,10 @@
 The purpose of this project is to create a simple Course Enrollment System. It allows users to manage student records and course information, including adding, displaying, updating, and deleting student and course data. The system stores this data in text files for persistence.
 
 ####
--Stuctures: The project utilizes structures ("Student" and "Course") to encapsulate related data and functions into coherent units.
--File-Based storage: Data is stored in text files (students.txt and courses.txt) to ensure persistence between program executions.
--Menu-Driven interface: Interaction with the system is menu-driven, providing users with clear options for various operations.
--Vectors: Used to store collections of students and courses dynamically, allowing for flexible manipulation and access.
++ Stuctures: The project utilizes structures ("Student" and "Course") to encapsulate related data and functions into coherent units.
++ File-Based storage: Data is stored in text files (students.txt and courses.txt) to ensure persistence between program executions.
++ Menu-Driven interface: Interaction with the system is menu-driven, providing users with clear options for various operations.
++ Vectors: Used to store collections of students and courses dynamically, allowing for flexible manipulation and access.
 
 ## Functions
 Student management functions: Including functions to add, display, update, and delete student records.
