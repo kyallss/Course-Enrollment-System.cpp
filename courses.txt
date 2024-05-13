@@ -1,3 +1,7 @@
-1. Programming Languagea 141
-2. Calculus 2 602
-3. Discrete Mathematics 151
+141 Programming Languagea 
+602 Calculus II
+151 Discrete Mathematics 
+123 Graphic Design
+136 Physical Education
+
+
