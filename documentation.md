@@ -1,4 +1,5 @@
 #### Documentation 
+
 # Purpose
 The purpose of this project is to create a simple Course Enrollment Management System. It allows users to manage student records and course information, including adding, displaying, updating, and deleting student and course data. The system stores this data in text files for persistence.
 
@@ -18,5 +19,6 @@ The purpose of this project is to create a simple Course Enrollment Management S
 + Course management functions: Similar functions for managing course data.
 + File i/o functions: Functions to read from and write to text files for data persistence.
 + Main function: The central logic of the program, handling user interaction and control flow.
+
 
   
