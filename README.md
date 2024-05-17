@@ -1,10 +1,10 @@
 # Course Enrollment System
-
+https://www.canva.com/design/DAGFCKpYFyE/W-K6Am4IFYXwgkJ0mdGVFg/edit
 ## 
 This is a simple C++ program that manages course enrollments for students, allowing registration, dropping, and updating of course selections. Students can use the Course Enrollment System by interacting with the menu, adding a new student, displaying courses, deleting a course, and finally exiting the application.
 
 
-## Functions
+## Features
 + Student management functions: Including functions to add, display, update, and delete student records.
 + Course management functions: Similar functions for managing course data.
 + File i/o functions: Functions to read from and write to text files for data persistence.
